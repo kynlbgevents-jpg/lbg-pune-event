@@ -1,34 +1,37 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Serif:wght@400;600&display=swap');
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  --kyndryl-red: #FF0000;
+  --kyndryl-red-hover: #D90000;
+  --kyndryl-red-light: #FFF0F0;
+  --kyndryl-black: #000000;
+  --gray-90: #161616;
+  --gray-80: #262626;
+  --gray-70: #393939;
+  --gray-60: #525252;
+  --gray-50: #6F6F6F;
+  --gray-30: #C6C6C6;
+  --gray-20: #E0E0E0;
+  --gray-10: #F4F4F4;
+  --white: #FFFFFF;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+  --success-green: #198038;
+  --success-green-bg: #DEFBE6;
+  --warning-amber: #B28600;
+  --warning-amber-bg: #FDF3D6;
+  --error-red: #DA1E28;
+  --error-red-bg: #FFF1F1;
 
-html {
-  height: 100%;
-}
+  --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+  --font-serif: 'IBM Plex Serif', serif;
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
-body {
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.12);
 }
 
 * {
@@ -37,13 +40,220 @@ body {
   margin: 0;
 }
 
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  font-family: var(--font-sans);
+  background-color: #F8F9FA;
+  color: var(--gray-90);
+  -webkit-font-smoothing: antialiased;
+}
+
 a {
   color: inherit;
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
+/* Base Form Elements */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="password"],
+select,
+textarea {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  padding: 12px 14px;
+  border: 1.5px solid var(--gray-30);
+  border-radius: var(--radius-sm);
+  background-color: var(--white);
+  color: var(--gray-90);
+  width: 100%;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  outline: none;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--kyndryl-black);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+}
+
+input.error,
+select.error {
+  border-color: var(--error-red);
+}
+
+label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray-80);
+  margin-bottom: 6px;
+  letter-spacing: 0.2px;
+}
+
+.hint-text {
+  font-size: 12px;
+  color: var(--gray-50);
+  margin-top: 4px;
+}
+
+/* Buttons */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 15px;
+  background-color: var(--kyndryl-red);
+  color: var(--white);
+  padding: 14px 28px;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.05s ease;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--kyndryl-red-hover);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.btn-primary:disabled {
+  background-color: var(--gray-30);
+  color: var(--gray-60);
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 14px;
+  background-color: var(--white);
+  color: var(--gray-90);
+  border: 1.5px solid var(--gray-30);
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  border-color: var(--kyndryl-black);
+  background-color: var(--gray-10);
+}
+
+.btn-dark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 14px;
+  background-color: var(--kyndryl-black);
+  color: var(--white);
+  padding: 10px 20px;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.btn-dark:hover {
+  background-color: var(--gray-80);
+}
+
+/* Alert Boxes */
+.alert-warning {
+  background-color: #FFF8E6;
+  border-left: 4px solid #F1C21B;
+  color: #684800;
+  padding: 14px 16px;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.alert-danger {
+  background-color: var(--error-red-bg);
+  border-left: 4px solid var(--error-red);
+  color: #750e13;
+  padding: 14px 16px;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.alert-success {
+  background-color: var(--success-green-bg);
+  border-left: 4px solid var(--success-green);
+  color: #0e431f;
+  padding: 14px 16px;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.badge-green {
+  background-color: var(--success-green-bg);
+  color: var(--success-green);
+}
+
+.badge-gray {
+  background-color: var(--gray-20);
+  color: var(--gray-70);
+}
+
+.badge-amber {
+  background-color: var(--warning-amber-bg);
+  color: var(--warning-amber);
+}
+
+.badge-red {
+  background-color: var(--error-red-bg);
+  color: var(--error-red);
+}
+
+/* Card layout */
+.card {
+  background: var(--white);
+  border: 1px solid var(--gray-20);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Header & Nav */
+.header-container {
+  border-bottom: 2px solid var(--kyndryl-black);
+  background-color: var(--white);
+}
+
+.kyndryl-logo-text {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 26px;
+  letter-spacing: -0.5px;
+  color: var(--kyndryl-red);
 }

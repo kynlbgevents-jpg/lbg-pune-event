@@ -210,9 +210,9 @@ Simple success screen shown after RSVP submission:
 
 **QR Code Data Structure:**
 ```json
-{ "id": "uuid-v4" }
+{ "id": "K9X2P4" }
 ```
-The QR code contains **only the UUID** — zero PII. The UUID is looked up server-side against the database on scan. If intercepted or screenshot-shared, the QR code reveals nothing about the guest.
+The QR code contains **only the 6-character alphanumeric pass code** — zero PII. The code is looked up server-side against the database on scan. If intercepted or screenshot-shared, the QR code reveals nothing about the guest.
 
 ---
 
@@ -293,7 +293,8 @@ The QR code contains **only the UUID** — zero PII. The UUID is looked up serve
 
 ```sql
 CREATE TABLE registrations (
-  id                   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  -- 6-character alphanumeric pass code (e.g. "K9X2P4")
+  id                   TEXT PRIMARY KEY,
 
   -- PII fields: AES-256-GCM encrypted at application layer before insert
   -- Format stored: "iv:authTag:ciphertext" (all base64, colon-delimited)
@@ -404,7 +405,7 @@ email_hash = HMAC-SHA256(email.toLowerCase(), BLIND_INDEX_SECRET)
 - One-way — cannot reverse the hash to get the email
 - Allows exact-match lookups (`WHERE email_hash = ?`) without touching plaintext
 - Duplicate detection: hash the submitted email → check if hash exists in DB
-- QR scan: UUID lookup (not email) — no hash needed for this flow
+- QR scan: 6-character pass code lookup (not email) — no hash needed for this flow
 
 ### Where Decryption Happens
 
@@ -413,7 +414,7 @@ email_hash = HMAC-SHA256(email.toLowerCase(), BLIND_INDEX_SECRET)
 | Supabase DB | ✅ Always encrypted | Ciphertext blobs only |
 | Vercel API routes (server) | Decrypts on read | Only when needed for email/admin display |
 | Admin dashboard (browser) | Receives plaintext | Decrypted server-side, sent over HTTPS |
-| QR code payload | N/A | Contains UUID only — no PII |
+| QR code payload | N/A | Contains 6-character pass code only — no PII |
 | Email (Gmail) | Plaintext | Email itself is the delivery of decrypted data to the guest |
 | CSV export | Plaintext | Downloaded over HTTPS; admin responsibility thereafter |
 
@@ -430,7 +431,7 @@ email_hash = HMAC-SHA256(email.toLowerCase(), BLIND_INDEX_SECRET)
 - Non-`@kyndryl.com` emails rejected at both client and server level
 - Supabase anon key allows `INSERT` only (RLS enforced)
 - Admin routes server-side protected with HTTP-only session cookie
-- QR payload is UUID only — not sequential, not guessable, contains zero PII
+- QR payload is 6-character alphanumeric pass code only — not sequential, not guessable, contains zero PII
 - All connections HTTPS (Vercel enforces)
 - Gmail OAuth2 tokens stored only as server-side env vars
 - Encrypted fields cannot be read even by someone with direct Supabase DB access without the `ENCRYPTION_SECRET`
