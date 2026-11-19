@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { encrypt, hashEmail, generatePassCode } from '@/lib/crypto';
-import { supabase } from '@/lib/supabase';
+import { getServiceClient } from '@/lib/supabase';
 
 const KYNDRYL_DOMAIN = '@kyndryl.com';
 
@@ -48,14 +48,25 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Self Drive with Drinking is not permitted.' }, { status: 400 });
     }
 
+    // Get server-side Supabase client
+    const supabaseAdmin = getServiceClient();
+
     // --- Duplicate check via blind index ---
     const emailHash = hashEmail(email);
 
-    const { data: existing } = await supabase
+    const { data: existing, error: existingError } = await supabaseAdmin
       .from('registrations')
       .select('id')
       .eq('email_hash', emailHash)
       .maybeSingle();
+
+    if (existingError) {
+      console.error('Supabase check existing error:', existingError);
+      return NextResponse.json(
+        { error: `Database error: ${existingError.message}. Make sure table "registrations" exists.` },
+        { status: 500 }
+      );
+    }
 
     if (existing) {
       return NextResponse.json(
@@ -79,12 +90,14 @@ export async function POST(req: NextRequest) {
 
     // --- Insert to Supabase with 6-character alphanumeric pass code ---
     let record = null;
+    let lastError: any = null;
     let attempts = 0;
+
     while (!record && attempts < 3) {
       attempts++;
       const passCode = generatePassCode(6);
 
-      const { data, error: insertError } = await supabase
+      const { data, error: insertError } = await supabaseAdmin
         .from('registrations')
         .insert({
           id: passCode,
@@ -101,15 +114,23 @@ export async function POST(req: NextRequest) {
         record = data;
         break;
       }
+      lastError = insertError;
     }
 
     if (!record) {
-      return NextResponse.json({ error: 'Failed to save registration. Please try again.' }, { status: 500 });
+      console.error('Supabase insert failed:', lastError);
+      return NextResponse.json(
+        { error: `Database save failed: ${lastError?.message || 'Could not save record'}` },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json({ success: true, id: record.id }, { status: 201 });
-  } catch (err) {
-    console.error('Registration error:', err);
-    return NextResponse.json({ error: 'Internal server error.' }, { status: 500 });
+  } catch (err: any) {
+    console.error('Registration API error:', err);
+    return NextResponse.json(
+      { error: err?.message || 'Server error occurred during registration.' },
+      { status: 500 }
+    );
   }
 }

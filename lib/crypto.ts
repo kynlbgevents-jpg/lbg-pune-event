@@ -5,13 +5,23 @@ const IV_LENGTH = 16;
 
 function getEncryptionKey(): Buffer {
   const secret = process.env.ENCRYPTION_SECRET;
-  if (!secret) throw new Error('ENCRYPTION_SECRET env var is not set');
-  return Buffer.from(secret, 'hex');
+  if (!secret) {
+    throw new Error('ENCRYPTION_SECRET environment variable is missing.');
+  }
+  // Try hex decode
+  const buf = Buffer.from(secret, 'hex');
+  if (buf.length === 32) {
+    return buf;
+  }
+  // If not 32 bytes hex, derive 32 bytes deterministically with SHA-256
+  return crypto.createHash('sha256').update(secret).digest();
 }
 
 function getBlindIndexSecret(): string {
-  const secret = process.env.BLIND_INDEX_SECRET;
-  if (!secret) throw new Error('BLIND_INDEX_SECRET env var is not set');
+  const secret = process.env.BLIND_INDEX_SECRET || process.env.ENCRYPTION_SECRET;
+  if (!secret) {
+    throw new Error('BLIND_INDEX_SECRET environment variable is missing.');
+  }
   return secret;
 }
 

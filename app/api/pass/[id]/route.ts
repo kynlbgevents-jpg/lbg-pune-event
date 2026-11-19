@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { getServiceClient } from '@/lib/supabase';
 import { decrypt } from '@/lib/crypto';
 
 export async function GET(
@@ -13,8 +13,9 @@ export async function GET(
     }
 
     const cleanId = id.trim().toUpperCase();
+    const supabaseAdmin = getServiceClient();
 
-    const { data: record, error } = await supabase
+    const { data: record, error } = await supabaseAdmin
       .from('registrations')
       .select('id, full_name_enc, dietary_pref, alcohol_pref, travel_mode, attended, entry_time')
       .eq('id', cleanId)
@@ -42,8 +43,8 @@ export async function GET(
       attended: record.attended,
       entryTime: record.entry_time,
     });
-  } catch (err) {
+  } catch (err: any) {
     console.error('Pass fetch error:', err);
-    return NextResponse.json({ error: 'Internal server error.' }, { status: 500 });
+    return NextResponse.json({ error: err?.message || 'Internal server error.' }, { status: 500 });
   }
 }
