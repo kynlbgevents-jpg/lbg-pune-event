@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { encrypt, hashEmail, generatePassCode } from '@/lib/crypto';
 import { supabase } from '@/lib/supabase';
-import { sendConfirmationEmail } from '@/lib/email';
 
 const KYNDRYL_DOMAIN = '@kyndryl.com';
 
@@ -60,7 +59,11 @@ export async function POST(req: NextRequest) {
 
     if (existing) {
       return NextResponse.json(
-        { error: 'DUPLICATE', message: 'You have already registered. Please check your inbox for your QR pass.' },
+        {
+          error: 'DUPLICATE',
+          message: 'You have already registered with this Kyndryl email! You can view your pass using your pass code.',
+          id: existing.id,
+        },
         { status: 409 }
       );
     }
@@ -102,21 +105,6 @@ export async function POST(req: NextRequest) {
 
     if (!record) {
       return NextResponse.json({ error: 'Failed to save registration. Please try again.' }, { status: 500 });
-    }
-
-    // --- Send confirmation email with QR ---
-    try {
-      await sendConfirmationEmail({
-        name: fullName.trim(),
-        email: email.toLowerCase().trim(),
-        dietaryPref,
-        alcoholPref,
-        travelMode,
-        registrationId: record.id,
-      });
-    } catch (emailErr) {
-      console.error('Email sending failed:', emailErr);
-      // Don't fail the registration if email fails — log and continue
     }
 
     return NextResponse.json({ success: true, id: record.id }, { status: 201 });

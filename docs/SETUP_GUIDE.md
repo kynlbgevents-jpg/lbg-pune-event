@@ -66,20 +66,17 @@ Access the admin dashboard at:
 
 ---
 
-## 5. Setting Up Gmail API (OAuth2) for Confirmation Emails
+## 5. Sending Entry Passes via Official Kyndryl Outlook (Mail Merge)
 
-Since this uses a dedicated Gmail account for the event:
-1. Go to [Google Cloud Console](https://console.cloud.google.com).
-2. Create a project and enable the **Gmail API**.
-3. Create OAuth 2.0 Credentials (Desktop or Web application).
-4. Authorize using Google OAuth Playground to get a **Refresh Token**.
-5. Put credentials into `.env.local`:
-   ```env
-   GMAIL_CLIENT_ID=<client-id>
-   GMAIL_CLIENT_SECRET=<client-secret>
-   GMAIL_REFRESH_TOKEN=<refresh-token>
-   GMAIL_FROM_ADDRESS=<your-event-email>@gmail.com
-   ```
+To ensure passes are sent exclusively from your official corporate account (no external email addresses or Gmail APIs):
+
+1. Go to the Admin Dashboard (`/admin/dashboard`) and click **"Export CSV"**.
+2. Open **Microsoft Word** → click the **Mailings** tab.
+3. Click **Start Mail Merge** → select **E-mail Messages**.
+4. Click **Select Recipients** → **Use an Existing List...** → choose the exported CSV.
+5. In the Admin Dashboard, click **"✉️ Outlook Mail Merge"** and copy the ready-made template. Paste it into your Word document.
+6. Click **Finish & Merge** → **Send Email Messages** → select `Official_Email` as the "To" field.
+7. Word sends all passes directly through your active **desktop Outlook app** using your official `@kyndryl.com` account!
 
 ---
 

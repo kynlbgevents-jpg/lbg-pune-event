@@ -90,9 +90,9 @@ export default function RSVPPage() {
       const data = await res.json();
 
       if (res.status === 409 || data.error === 'DUPLICATE') {
+        const passLink = data.id ? ` Your Pass Code is ${data.id}.` : '';
         setDuplicateMessage(
-          data.message ||
-            'You have already registered with this Kyndryl email! Please check your inbox for your QR pass.'
+          (data.message || 'You have already registered with this Kyndryl email!') + passLink
         );
         setSubmitting(false);
         return;
@@ -104,8 +104,10 @@ export default function RSVPPage() {
         return;
       }
 
-      // Success -> Redirect to confirmation page
-      router.push(`/confirmation?name=${encodeURIComponent(fullName.trim())}`);
+      // Success -> Redirect to confirmation page with name and pass id
+      router.push(
+        `/confirmation?name=${encodeURIComponent(fullName.trim())}&id=${encodeURIComponent(data.id || '')}`
+      );
     } catch (err) {
       console.error(err);
       setErrorMessage('A network error occurred. Please try again.');
